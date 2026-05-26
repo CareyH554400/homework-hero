@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const supabase = getSupabaseBrowser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -20,7 +22,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
       if (error) { setErr(error.message); return; }
-      router.push("/"); router.refresh();
+      router.push(nextPath); router.refresh();
     } else {
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       const { data, error } = await supabase.auth.signUp({
@@ -34,7 +36,7 @@ export default function LoginPage() {
       if (!data.session) {
         setNotice(`We sent a confirmation link to ${email}. Open it to finish signing up.`);
       } else {
-        router.push("/"); router.refresh();
+        router.push(nextPath); router.refresh();
       }
     }
   }
