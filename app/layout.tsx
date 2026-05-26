@@ -1,12 +1,15 @@
 import "./globals.css";
 import Link from "next/link";
 import { getSupabaseServer } from "@/lib/supabase/server";
+import { checkIsPremium } from "@/lib/premium";
 
 export const metadata = { title: "Homework Tracker", description: "Your homework, in one place." };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = getSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
+  const isPremium = user ? await checkIsPremium() : false;
+
   return (
     <html lang="en">
       <body>
@@ -19,6 +22,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <NavLink href="/today">Today</NavLink>
               <NavLink href="/missing">Missing</NavLink>
               <NavLink href="/settings">Settings</NavLink>
+              {!isPremium && (
+                <Link
+                  href="/upgrade"
+                  className="ml-2 px-3 py-1.5 rounded-md text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-300 hover:bg-amber-100 whitespace-nowrap transition-colors"
+                >
+                  ⭐ Upgrade
+                </Link>
+              )}
               <form action="/api/auth/signout" method="post" className="ml-auto">
                 <button className="text-sm text-slate-500 hover:text-slate-900">Sign out</button>
               </form>
