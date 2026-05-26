@@ -32,10 +32,10 @@ export default function UpgradePage() {
 
       <div className="bg-white border-2 border-blue-500 rounded-2xl p-8 shadow-lg mb-6">
         <div className="flex items-baseline gap-1 mb-1">
-          <span className="text-4xl font-bold text-slate-900">$4.99</span>
-          <span className="text-slate-500">/month</span>
+          <span className="text-4xl font-bold text-slate-900">$3.99</span>
+          <span className="text-slate-500">/year</span>
         </div>
-        <p className="text-sm text-slate-500 mb-6">Cancel anytime. No hidden fees.</p>
+        <p className="text-sm text-slate-500 mb-6">Less than $0.34/month. Cancel anytime.</p>
 
         <ul className="space-y-3 mb-8">
           <li className="flex items-start gap-3">
