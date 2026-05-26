@@ -9,6 +9,11 @@ export default function UpgradePage() {
   async function handleUpgrade() {
     setLoading(true);
     const res = await fetch("/api/stripe/checkout", { method: "POST" });
+    if (res.status === 401) {
+      // Not logged in — send to login, then return here after
+      router.push("/login?next=/upgrade");
+      return;
+    }
     const data = await res.json();
     if (data.alreadyPremium) {
       router.push("/upgrade/success");
