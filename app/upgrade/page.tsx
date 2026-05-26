@@ -8,20 +8,35 @@ export default function UpgradePage() {
 
   async function handleUpgrade() {
     setLoading(true);
-    const res = await fetch("/api/stripe/checkout", { method: "POST" });
-    if (res.status === 401) {
-      // Not logged in — send to login, then return here after
-      router.push("/login?next=/upgrade");
-      return;
-    }
-    const data = await res.json();
-    if (data.alreadyPremium) {
-      router.push("/upgrade/success");
-      return;
-    }
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
+    try {
+      const res = await fetch("/api/stripe/checkout", { method: "POST" });
+
+      // Not logged in
+      if (res.status === 401) {
+        router.push("/login?next=/upgrade");
+        return;
+      }
+
+      // Check we got JSON back (not an HTML redirect page)
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        router.push("/login?next=/upgrade");
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.alreadyPremium) {
+        router.push("/upgrade/success");
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Something went wrong. Please try again.");
+        setLoading(false);
+      }
+    } catch {
       alert("Something went wrong. Please try again.");
       setLoading(false);
     }
