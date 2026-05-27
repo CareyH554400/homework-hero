@@ -37,6 +37,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </nav>
         )}
         <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+        <footer className="border-t border-slate-200 mt-8 py-4 text-center text-xs text-slate-400">
+          © 2026 Homework Tracker. All rights reserved.
+        </footer>
       </body>
     </html>
   );
