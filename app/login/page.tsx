@@ -14,10 +14,16 @@ export default function LoginPage() {
   const [err, setErr] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setErr(null); setNotice(null); setLoading(true);
+    setErr(null); setNotice(null);
+    if (mode === "signup" && !agreedToTerms) {
+      setErr("You must agree to the Terms of Service to create an account.");
+      return;
+    }
+    setLoading(true);
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
@@ -62,6 +68,22 @@ export default function LoginPage() {
           className="w-full border border-slate-300 rounded-md px-3 py-2" />
         <input type="password" required placeholder="Password (min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)}
           className="w-full border border-slate-300 rounded-md px-3 py-2" />
+        {mode === "signup" && (
+          <label className="flex items-start gap-2 text-sm text-slate-600 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-0.5 h-4 w-4 cursor-pointer"
+            />
+            <span>
+              I agree to the{" "}
+              <a href="/terms" target="_blank" className="text-blue-600 underline hover:text-blue-800">
+                Terms of Service
+              </a>
+            </span>
+          </label>
+        )}
         {err && <div className="text-red-600 text-sm">{err}</div>}
         {notice && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-md p-3">
