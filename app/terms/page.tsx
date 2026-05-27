@@ -121,9 +121,8 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">8. Governing Law</h2>
           <p>
-            These Terms shall be governed and construed in accordance with the laws of the jurisdiction
-            in which The Heller Psychology Group, LLC operates, without regard to its conflict of law
-            provisions.
+            These Terms shall be governed and construed in accordance with the laws of the State of
+            Maryland, United States, without regard to its conflict of law provisions.
           </p>
         </section>
 
