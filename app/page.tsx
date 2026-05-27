@@ -97,6 +97,17 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* App screenshot */}
+      <section className="max-w-3xl mx-auto px-4 mb-16">
+        <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-200">
+          <img
+            src="/app-screenshot.png"
+            alt="Homework Tracker dashboard showing assignments, today's plan, and quick actions"
+            className="w-full h-auto"
+          />
+        </div>
+      </section>
+
       {/* Section 1 — The Problem */}
       <section className="max-w-2xl mx-auto px-4 mb-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
