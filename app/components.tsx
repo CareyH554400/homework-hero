@@ -97,7 +97,7 @@ export function TaskCard({ task, planItemId, showAddToday = true }: { task: Task
           )}
 
           {scheduled && (
-            <p className="text-xs text-green-600 mt-1">✓ Added to your plan for {new Date(pickedDate + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</p>
+            <p className="text-xs text-green-600 mt-1">✓ Scheduled for future date</p>
           )}
         </div>
 
