@@ -41,13 +41,13 @@ export async function deleteTask(taskId: string) {
   revalidatePath("/tasks"); revalidatePath("/"); revalidatePath("/today"); revalidatePath("/missing");
 }
 
-export async function addToToday(taskId: string, mode: "copy" | "move") {
+export async function addToToday(taskId: string, mode: "copy" | "move", planDate?: string) {
   const supabase = getSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
-  const today = new Date().toISOString().slice(0, 10);
+  const date = planDate || new Date().toISOString().slice(0, 10);
   await supabase.from("ht_daily_plan_item").insert({
-    user_id: user.id, task_id: taskId, plan_date: today, mode,
+    user_id: user.id, task_id: taskId, plan_date: date, mode,
   });
   revalidatePath("/today"); revalidatePath("/tasks"); revalidatePath("/");
 }
