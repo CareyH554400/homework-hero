@@ -9,7 +9,7 @@ export default async function TodayPage() {
 
   // Build 7-day window starting from today
   const dates: string[] = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 30; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
     dates.push(d.toISOString().slice(0, 10));
