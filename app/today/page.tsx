@@ -21,7 +21,7 @@ export default async function TodayPage() {
   const [{ data: items }, isPremium] = await Promise.all([
     supabase
       .from("ht_daily_plan_item")
-      .select("id, task_id, plan_date, ht_task(*)")
+      .select("id, task_id, plan_date, estimated_minutes, ht_task(*)")
       .eq("user_id", user.id)
       .gte("plan_date", startDate)
       .lte("plan_date", endDate)
@@ -38,10 +38,18 @@ export default async function TodayPage() {
     grouped[date] = validItems.filter((it: any) => it.plan_date === date);
   }
 
+  // Build initial estimates map from saved DB values
+  const initialEstimates: Record<string, string> = {};
+  for (const item of validItems) {
+    if (item.estimated_minutes) {
+      initialEstimates[item.id] = String(item.estimated_minutes);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Plan</h1>
-      <TodayPlanList grouped={grouped} dates={dates} isPremium={isPremium} />
+      <TodayPlanList grouped={grouped} dates={dates} isPremium={isPremium} initialEstimates={initialEstimates} />
     </div>
   );
 }
