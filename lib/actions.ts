@@ -52,6 +52,14 @@ export async function addToToday(taskId: string, mode: "copy" | "move", planDate
   revalidatePath("/today"); revalidatePath("/tasks"); revalidatePath("/");
 }
 
+export async function updateEstimate(itemId: string, minutes: number) {
+  const supabase = getSupabaseServer();
+  await supabase.from("ht_daily_plan_item")
+    .update({ estimated_minutes: minutes })
+    .eq("id", itemId);
+  revalidatePath("/today");
+}
+
 export async function removeFromToday(itemId: string) {
   const supabase = getSupabaseServer();
   await supabase.from("ht_daily_plan_item").delete().eq("id", itemId);
