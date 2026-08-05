@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { TaskCard } from "../components";
 import type { Task } from "../components";
+import { updateEstimate } from "@/lib/actions";
 
 type PlanItem = {
   id: string;
@@ -51,12 +52,14 @@ function DaySection({
   isPremium,
   estimates,
   setEstimates,
+  onBlurEstimate,
 }: {
   date: string;
   items: PlanItem[];
   isPremium: boolean;
   estimates: Record<string, string>;
   setEstimates: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  onBlurEstimate: (itemId: string, value: string) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const isToday = date === today;
@@ -128,6 +131,7 @@ function DaySection({
                         [item.id]: e.target.value,
                       }))
                     }
+                    onBlur={(e) => onBlurEstimate(item.id, e.target.value)}
                     className="w-20 border border-slate-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                   <span className="text-xs text-slate-400">min</span>
@@ -158,12 +162,21 @@ export function TodayPlanList({
   grouped,
   dates,
   isPremium,
+  initialEstimates,
 }: {
   grouped: Record<string, PlanItem[]>;
   dates: string[];
   isPremium: boolean;
+  initialEstimates: Record<string, string>;
 }) {
-  const [estimates, setEstimates] = useState<Record<string, string>>({});
+  const [estimates, setEstimates] = useState<Record<string, string>>(initialEstimates);
+
+  function handleBlurEstimate(itemId: string, value: string) {
+    const minutes = parseInt(value, 10);
+    if (!isNaN(minutes) && minutes >= 0) {
+      updateEstimate(itemId, minutes);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -175,6 +188,7 @@ export function TodayPlanList({
           isPremium={isPremium}
           estimates={estimates}
           setEstimates={setEstimates}
+          onBlurEstimate={handleBlurEstimate}
         />
       ))}
     </div>
