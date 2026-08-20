@@ -3,7 +3,27 @@ import Link from "next/link";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import { checkIsPremium } from "@/lib/premium";
 
-export const metadata = { title: "Homework Tracker", description: "Your homework, in one place." };
+export const metadata = {
+  title: { default: "Homework Tracker – Stay on Top of Every Assignment", template: "%s | Homework Tracker" },
+  description: "Homework Tracker helps students organize assignments, plan their week, and never miss a deadline. Free to use. Works with your school calendar.",
+  keywords: ["homework tracker", "assignment planner", "student planner", "homework organizer", "school assignment tracker"],
+  metadataBase: new URL("https://myhomeworktracker.com"),
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Homework Tracker – Stay on Top of Every Assignment",
+    description: "Organize assignments, plan your week, and never miss a deadline.",
+    url: "https://myhomeworktracker.com",
+    siteName: "Homework Tracker",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Homework Tracker – Stay on Top of Every Assignment",
+    description: "Organize assignments, plan your week, and never miss a deadline.",
+  },
+  robots: { index: true, follow: true },
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = getSupabaseServer();
