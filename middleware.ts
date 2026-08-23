@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = req.nextUrl.pathname;
   const isAuthPage = path.startsWith("/login");
-  const isPublic = isAuthPage || path === "/" || path.startsWith("/upgrade") || path.startsWith("/terms") || path.startsWith("/auth/callback") || path.startsWith("/api/") || path.startsWith("/_next") || path === "/favicon.ico";
+  const isPublic = isAuthPage || path === "/" || path.startsWith("/upgrade") || path.startsWith("/terms") || path.startsWith("/auth/callback") || path.startsWith("/api/") || path.startsWith("/_next") || path === "/favicon.ico" || path === "/sitemap.xml" || path === "/robots.txt";
   if (!user && !isPublic) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
