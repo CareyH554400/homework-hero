@@ -66,8 +66,15 @@ export default function LoginPage() {
       <form onSubmit={submit} className="space-y-3">
         <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
           className="w-full border border-slate-300 rounded-md px-3 py-2" />
-        <input type="password" required placeholder="Password (min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)}
-          className="w-full border border-slate-300 rounded-md px-3 py-2" />
+        <div className="space-y-1">
+          <input type="password" required placeholder="Password (min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-slate-300 rounded-md px-3 py-2" />
+          {mode === "signin" && (
+            <div className="text-right">
+              <a href="/forgot-password" className="text-xs text-blue-600 hover:underline">Forgot password?</a>
+            </div>
+          )}
+        </div>
         {mode === "signup" && (
           <label className="flex items-start gap-2 text-sm text-slate-600 cursor-pointer">
             <input
