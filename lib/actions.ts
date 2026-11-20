@@ -66,6 +66,20 @@ export async function removeFromToday(itemId: string) {
   revalidatePath("/today"); revalidatePath("/");
 }
 
+export async function addReminder(text: string) {
+  const supabase = getSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("ht_reminder").insert({ user_id: user.id, text });
+  revalidatePath("/today");
+}
+
+export async function deleteReminder(id: string) {
+  const supabase = getSupabaseServer();
+  await supabase.from("ht_reminder").delete().eq("id", id);
+  revalidatePath("/today");
+}
+
 export async function addFeed(formData: FormData) {
   const supabase = getSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
