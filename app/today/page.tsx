@@ -1,6 +1,7 @@
 import { getSupabaseServer } from "@/lib/supabase/server";
 import { checkIsPremium } from "@/lib/premium";
 import { TodayPlanList } from "./TodayPlanList";
+import { RemindersSection } from "./RemindersSection";
 
 export default async function TodayPage() {
   const supabase = getSupabaseServer();
@@ -18,7 +19,7 @@ export default async function TodayPage() {
   const startDate = dates[0];
   const endDate = dates[dates.length - 1];
 
-  const [{ data: items }, isPremium] = await Promise.all([
+  const [{ data: items }, { data: reminders }, isPremium] = await Promise.all([
     supabase
       .from("ht_daily_plan_item")
       .select("id, task_id, plan_date, estimated_minutes, ht_task(*)")
@@ -27,6 +28,7 @@ export default async function TodayPage() {
       .lte("plan_date", endDate)
       .order("plan_date")
       .order("position"),
+    supabase.from("ht_reminder").select("id, text").eq("user_id", user.id).order("created_at"),
     checkIsPremium(),
   ]);
 
@@ -49,6 +51,7 @@ export default async function TodayPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Plan</h1>
+      <RemindersSection initialReminders={reminders || []} />
       <TodayPlanList grouped={grouped} dates={dates} isPremium={isPremium} initialEstimates={initialEstimates} />
     </div>
   );
