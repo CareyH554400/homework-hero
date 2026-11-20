@@ -70,6 +70,11 @@ export function TaskCard({ task, planItemId, showAddToday = true }: { task: Task
             <span className="text-slate-400">{task.source_type === "ics" ? "📅 imported" : "✏ manual"}</span>
           </div>
 
+          {/* Notes */}
+          {task.description && (
+            <p className="mt-1.5 text-xs text-slate-500 italic leading-snug">{task.description}</p>
+          )}
+
           {/* Date picker (shown when 📅 is clicked) */}
           {showDatePicker && (
             <div className="mt-2 flex items-center gap-2 flex-wrap">
