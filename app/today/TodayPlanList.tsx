@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { TaskCard } from "../components";
 import type { Task } from "../components";
-import { updateEstimate } from "@/lib/actions";
+import { updateEstimate, updateScheduledTime } from "@/lib/actions";
 
 type PlanItem = {
   id: string;
@@ -35,7 +35,7 @@ function formatDisplayDate(dateStr: string): string {
 function PremiumTimeGate() {
   return (
     <div className="flex items-center gap-2 pl-1 py-1">
-      <span className="text-xs text-slate-400">⏱ Estimated completion time:</span>
+      <span className="text-xs text-slate-400">⏱ Estimated time & schedule:</span>
       <Link
         href="/upgrade"
         className="inline-flex items-center gap-1 text-xs bg-amber-50 border border-amber-300 text-amber-700 px-2 py-0.5 rounded hover:bg-amber-100 transition-colors font-medium"
@@ -53,6 +53,9 @@ function DaySection({
   estimates,
   setEstimates,
   onBlurEstimate,
+  times,
+  setTimes,
+  onChangetime,
 }: {
   date: string;
   items: PlanItem[];
@@ -60,6 +63,9 @@ function DaySection({
   estimates: Record<string, string>;
   setEstimates: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onBlurEstimate: (itemId: string, value: string) => void;
+  times: Record<string, string>;
+  setTimes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  onChangetime: (itemId: string, value: string) => void;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const isToday = date === today;
@@ -111,30 +117,66 @@ function DaySection({
             <div key={item.id} className="space-y-1">
               <TaskCard task={item.ht_task} planItemId={item.id} showAddToday={false} />
               {isPremium ? (
-                <div className="flex items-center gap-2 pl-1">
-                  <label
-                    htmlFor={`est-${item.id}`}
-                    className="text-xs text-slate-500 whitespace-nowrap"
-                  >
-                    Estimated completion time:
-                  </label>
-                  <input
-                    id={`est-${item.id}`}
-                    type="number"
-                    min="0"
-                    step="5"
-                    placeholder="0"
-                    value={estimates[item.id] ?? ""}
-                    onChange={(e) =>
-                      setEstimates((prev) => ({
-                        ...prev,
-                        [item.id]: e.target.value,
-                      }))
-                    }
-                    onBlur={(e) => onBlurEstimate(item.id, e.target.value)}
-                    className="w-20 border border-slate-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                  <span className="text-xs text-slate-400">min</span>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pl-1">
+                  {/* Estimated time */}
+                  <div className="flex items-center gap-1.5">
+                    <label
+                      htmlFor={`est-${item.id}`}
+                      className="text-xs text-slate-500 whitespace-nowrap"
+                    >
+                      ⏱ Est. time:
+                    </label>
+                    <input
+                      id={`est-${item.id}`}
+                      type="number"
+                      min="0"
+                      step="5"
+                      placeholder="0"
+                      value={estimates[item.id] ?? ""}
+                      onChange={(e) =>
+                        setEstimates((prev) => ({
+                          ...prev,
+                          [item.id]: e.target.value,
+                        }))
+                      }
+                      onBlur={(e) => onBlurEstimate(item.id, e.target.value)}
+                      className="w-16 border border-slate-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <span className="text-xs text-slate-400">min</span>
+                  </div>
+
+                  {/* Scheduled time */}
+                  <div className="flex items-center gap-1.5">
+                    <label
+                      htmlFor={`time-${item.id}`}
+                      className="text-xs text-slate-500 whitespace-nowrap"
+                    >
+                      🕐 Start time:
+                    </label>
+                    <input
+                      id={`time-${item.id}`}
+                      type="time"
+                      value={times[item.id] ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setTimes((prev) => ({ ...prev, [item.id]: val }));
+                        onChangetime(item.id, val);
+                      }}
+                      className="border border-slate-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    {times[item.id] && (
+                      <button
+                        onClick={() => {
+                          setTimes((prev) => { const n = { ...prev }; delete n[item.id]; return n; });
+                          onChangetime(item.id, "");
+                        }}
+                        className="text-xs text-slate-400 hover:text-red-400"
+                        title="Clear time"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <PremiumTimeGate />
@@ -163,19 +205,26 @@ export function TodayPlanList({
   dates,
   isPremium,
   initialEstimates,
+  initialTimes,
 }: {
   grouped: Record<string, PlanItem[]>;
   dates: string[];
   isPremium: boolean;
   initialEstimates: Record<string, string>;
+  initialTimes: Record<string, string>;
 }) {
   const [estimates, setEstimates] = useState<Record<string, string>>(initialEstimates);
+  const [times, setTimes] = useState<Record<string, string>>(initialTimes);
 
   function handleBlurEstimate(itemId: string, value: string) {
     const minutes = parseInt(value, 10);
     if (!isNaN(minutes) && minutes >= 0) {
       updateEstimate(itemId, minutes);
     }
+  }
+
+  function handleChangeTime(itemId: string, value: string) {
+    updateScheduledTime(itemId, value || null);
   }
 
   return (
@@ -189,6 +238,9 @@ export function TodayPlanList({
           estimates={estimates}
           setEstimates={setEstimates}
           onBlurEstimate={handleBlurEstimate}
+          times={times}
+          setTimes={setTimes}
+          onChangetime={handleChangeTime}
         />
       ))}
     </div>
