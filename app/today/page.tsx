@@ -22,7 +22,7 @@ export default async function TodayPage() {
   const [{ data: items }, { data: reminders }, isPremium] = await Promise.all([
     supabase
       .from("ht_daily_plan_item")
-      .select("id, task_id, plan_date, estimated_minutes, ht_task(*)")
+      .select("id, task_id, plan_date, estimated_minutes, scheduled_time, ht_task(*)")
       .eq("user_id", user.id)
       .gte("plan_date", startDate)
       .lte("plan_date", endDate)
@@ -40,11 +40,15 @@ export default async function TodayPage() {
     grouped[date] = validItems.filter((it: any) => it.plan_date === date);
   }
 
-  // Build initial estimates map from saved DB values
+  // Build initial estimates and scheduled times maps from saved DB values
   const initialEstimates: Record<string, string> = {};
+  const initialTimes: Record<string, string> = {};
   for (const item of validItems) {
     if (item.estimated_minutes) {
       initialEstimates[item.id] = String(item.estimated_minutes);
+    }
+    if (item.scheduled_time) {
+      initialTimes[item.id] = item.scheduled_time;
     }
   }
 
@@ -52,7 +56,7 @@ export default async function TodayPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Plan</h1>
       <RemindersSection initialReminders={reminders || []} />
-      <TodayPlanList grouped={grouped} dates={dates} isPremium={isPremium} initialEstimates={initialEstimates} />
+      <TodayPlanList grouped={grouped} dates={dates} isPremium={isPremium} initialEstimates={initialEstimates} initialTimes={initialTimes} />
     </div>
   );
 }
