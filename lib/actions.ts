@@ -66,6 +66,28 @@ export async function removeFromToday(itemId: string) {
   revalidatePath("/today"); revalidatePath("/");
 }
 
+export async function saveGradeSnapshot(snapshotDate: string, screenshotUrl: string | null, entries: { class_name: string; grade: string }[]) {
+  const supabase = getSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { data: snapshot, error } = await supabase
+    .from("ht_grade_snapshot")
+    .insert({ user_id: user.id, snapshot_date: snapshotDate, screenshot_url: screenshotUrl })
+    .select("id")
+    .single();
+  if (error || !snapshot) return;
+  await supabase.from("ht_grade_entry").insert(
+    entries.map((e) => ({ snapshot_id: snapshot.id, class_name: e.class_name, grade: e.grade }))
+  );
+  revalidatePath("/grades");
+}
+
+export async function deleteGradeSnapshot(id: string) {
+  const supabase = getSupabaseServer();
+  await supabase.from("ht_grade_snapshot").delete().eq("id", id);
+  revalidatePath("/grades");
+}
+
 export async function addReminder(text: string) {
   const supabase = getSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
