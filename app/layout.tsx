@@ -41,6 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <NavLink href="/tasks">Assignments</NavLink>
               <NavLink href="/today">Today</NavLink>
               <NavLink href="/missing">Missing</NavLink>
+              <NavLink href="/grades">Grades</NavLink>
               <NavLink href="/settings">Settings</NavLink>
               {!isPremium && (
                 <Link
