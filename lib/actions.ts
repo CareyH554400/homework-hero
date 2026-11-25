@@ -60,6 +60,14 @@ export async function updateEstimate(itemId: string, minutes: number) {
   revalidatePath("/today");
 }
 
+export async function updateScheduledTime(itemId: string, time: string | null) {
+  const supabase = getSupabaseServer();
+  await supabase.from("ht_daily_plan_item")
+    .update({ scheduled_time: time || null })
+    .eq("id", itemId);
+  revalidatePath("/today");
+}
+
 export async function removeFromToday(itemId: string) {
   const supabase = getSupabaseServer();
   await supabase.from("ht_daily_plan_item").delete().eq("id", itemId);
